@@ -1,0 +1,35 @@
+<html>
+
+  <head>
+    <title>Node Messenger</title>
+  </head>
+  <body>
+    <div id="output">
+      HELLO WORLD
+    </div>
+    <button onclick="foo()">Changed</button>
+  </body>
+
+</html>
+
+<script type="text/javascript">
+
+  let arrValues = new Array()
+
+  let foo = function (){
+    let xhttp = new XMLHttpRequest()
+    xhttp.open("GET", 'http://localhost:3000/updates', true)
+    xhttp.send()
+    console.log("Made request")
+  }
+
+  let evntSource = new EventSource('http://localhost:3000/updates')
+  evntSource.addEventListener('ping', (e)=>{
+    console.log(JSON.parse(e.data).welcomeMsg)
+    arrValues.push(e)
+  })
+
+  evntSource.addEventListener('message', (e)=>{
+    console.log("Got something")
+  })
+</script>

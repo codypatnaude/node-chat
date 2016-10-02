@@ -4,9 +4,36 @@ const express = require('express')
 const app  = express()
 const port = 3000
 
+const sseExpress = require('sse-express')
+
+const fs = require('fs')
+
+const clientHTML = function (){
+  let html = fs.readFileSync('./client.html')
+  return html
+}
+
+let counter = 0
+
+console.log(clientHTML().toString('utf8'))
+
+app.get('/updates', sseExpress, (request, response) =>{
+  response.sse('message', {
+    welcomeMsg: 'Hello world!',
+    msgCount : counter.toString()
+  })
+
+  ++counter
+  console.log("Received update request.Sent back ", {
+    welcomeMsg: 'Hello world!',
+    msgCount : counter.toString()
+  })
+})
+
 app.get('/', (request, response) => {
-  console.log(request)
-  response.send('Hello from express!')
+  console.log("get received... sending \r\n", clientHTML().toString('utf8'))
+  response.setHeader("Content-Type", "text/html")
+  response.send(clientHTML())
 })
 
 app.listen(port, (err)=>{
